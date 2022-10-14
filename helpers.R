@@ -1,4 +1,4 @@
-# 1. fonction pour formatter les données de consomation
+# 1. fonction pour formatter les donn?es de consomation
 format_conso <- function(Conso) {
   Conso <- Conso[3:nrow(Conso),c(1,2)]
   Conso <- data.table(
@@ -279,7 +279,7 @@ IPMVP_plot <- function(DT_X, Conso_ipmvp, date_debut_reference,date_fin_referenc
     X1_name = colnames(DT_X_ref)[2]
     colnames(DT_X_ref)[2] <- "X1"
     colnames(DT_X_suivi)[2] <- "X1"
-    # aggréger conso en mois
+    # aggr?ger conso en mois
     DT <- Conso_ipmvp %>%
       filter(
         Time_day >= date_debut_reference &
@@ -299,7 +299,7 @@ IPMVP_plot <- function(DT_X, Conso_ipmvp, date_debut_reference,date_fin_referenc
       summarize(kWh_10min = sum(kWh_10min, na.rm = T)) %>%
       as.data.table()
     DT_suivi[,kWh_10min := kWh_10min/1000] 
-    # Aggréger X1 en mois
+    # Aggr?ger X1 en mois
     DT_X_ref <- DT_X_ref %>%
       group_by(Time_month) %>%
       summarize(X1 = sum(X1, na.rm = T)) %>%
@@ -337,11 +337,11 @@ IPMVP_plot <- function(DT_X, Conso_ipmvp, date_debut_reference,date_fin_referenc
           highchart() %>%
           hc_add_series(
             xts(DT_suivi$kWh_10min, order.by = DT_suivi$Time_month),
-            name = "Réalisé",
+            name = "RÃ©alisÃ©",
             type = "column",
             colorByPoint = T,
             colors = unname(couleurs ) ) %>% 
-          hc_add_series(name = "Théorique",
+          hc_add_series(name = "ThÃ©orique",
                         xts(round(DT_model[,1],5), order.by = DT_suivi$Time_month),
                         type = "spline",
                         dashStyle = 'ShortDash',
