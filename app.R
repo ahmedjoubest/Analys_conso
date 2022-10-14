@@ -7,7 +7,7 @@ library(dplyr, warn.conflicts = FALSE)
 library(utc)
 library(xts)
 library(DT)
-
+library(shinycssloaders)
 
 
 source("helpers.R")
@@ -24,10 +24,12 @@ sidebar <- dashboardSidebar(
   
   
   dateRangeInput("date_reference",
-                 "2- Choisir la période de référence"),
+                 "2- Choisir la période de référence",start = "2020-10-01",
+                   end = "2021-02-28"),
   
   dateRangeInput("date_suivi",
-                 "3- Choisir la période de suivi"),
+                 "3- Choisir la période de suivi", start = "2020-12-01",
+                 end = "2021-06-11"),
   
   fileInput("file_X", "4- Charger les données des DJU",
             multiple = FALSE,
@@ -35,9 +37,9 @@ sidebar <- dashboardSidebar(
                        "text/comma-separated-values,text/plain",
                        ".csv")),
   
-  dateInput("APE_date_1", label = "5- Choisir la date de la première APE"),
-  dateInput("APE_date_2", label = "6- Choisir la date de la 2ième APE (facultatif)"),
-  dateInput("APE_date_3", label = "7- Choisir la date de la 3ième APE (facultatif)"),
+  dateInput("APE_date_1", label = "5- Choisir la date de la première APE",value = "2021-01-01"),
+  dateInput("APE_date_2", label = "6- Choisir la date de la 2ième APE (facultatif)", value = "2021-01-15"),
+  dateInput("APE_date_3", label = "7- Choisir la date de la 3ième APE (facultatif)", value = "2021-02-02"),
   
   
   
@@ -69,7 +71,8 @@ body <- dashboardBody(
       ,
       
       # Heat map output
-      highchartOutput("heatmap"), width=12,status="primary", solidHeader = T),
+      highchartOutput("heatmap")%>% 
+        withSpinner(color="#3C8DBC",type=4, proxy.height = "460px",size = 0.5), width=12,status="primary", solidHeader = T),
     
     box(
       title = "IPMVP", width=12,status="primary", solidHeader = T,
@@ -81,7 +84,8 @@ body <- dashboardBody(
       ),
       br(),
       
-      highchartOutput("ipmvp")
+      highchartOutput("ipmvp")%>% 
+        withSpinner(color="#3C8DBC",type=4, proxy.height = "400px",size = 0.5)
       
     ),
     div( align ='center',
@@ -101,18 +105,18 @@ ui <-
 
 server <- function(input, output) {
   
-  DT <- eventReactive(input$submit,{
-    read.csv2(input$file_conso$datapath, encoding = "UTF8") %>% 
+  DT <- eventReactive(input$submit,ignoreNULL = F,{
+    read.csv2("Enedis_SGE_HDM_A05VF6RP.csv", encoding = "UTF8") %>% 
       format_conso()
   })
   
-  DT_ipmvp <- eventReactive(input$submit,{
-    read.csv2(input$file_conso$datapath, encoding = "UTF8") %>% 
+  DT_ipmvp <- eventReactive(input$submit,ignoreNULL = F,{
+    read.csv2("Enedis_SGE_HDM_A05VF6RP.csv", encoding = "UTF8") %>% 
       format_conso_ipmvp()
   })
   
-  DT_DJU <- eventReactive(input$submit,{
-    read.csv2(input$file_X$datapath, encoding = "UTF8")
+  DT_DJU <- eventReactive(input$submit,ignoreNULL = F,{
+    read.csv2("infoclimat-2020-07-01-2022-07-31-paris-montsouris.csv", encoding = "UTF8")
   })
   
   # Intervalle de date heatmap
